@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: "URL, die gescannt werden soll"
+        description: "URL eingeben zum Scannen (inkl. http/https)"
         required: true
         default: "https://example.com"
 
@@ -24,36 +24,22 @@ jobs:
           # URL zum Scannen (Default-Wert kann im Workflow-Dispatch angepasst werden)
           target: ${{ github.event.inputs.target }}
 
-          # Hier wird eine benutzerdefinierte Regeldatei angegeben. (erweiterbar)
+          # Eigene ZAP-Regeldatei (TSV-Format, siehe zap/zap-rules.conf)
           rules_file_name: zap/zap-rules.conf
 
           # Keine automatischen GitHub-Issues für Findings erstellen
-          # da wir den Scan nur als Gate nutzen wollen!
           allow_issue_writing: false
 
-          # Wenn bestimmte Findings/Fehler auftreten dann bricht die Pipeline ab,
-          # fehlerhafte Findings sind in der zap-rules.conf definiert
+          # Wenn bestimmte Findings/Fehler auftreten, dann bricht die Pipeline ab
           fail_action: true
 
-          # Der Report wird als Artifact hochgeladen
-          # Artifact-Typ: HTML-Report
-          # report_type: "html"
+          # Name des Artifacts für den Report
           artifact_name: "zap-report"
 
-          # Zusätzliche Optionen: API-Key deaktivieren + Spider-Laufzeit begrenzen
-          # Spider maxDuration auf 5 Minuten gesetzt.
-          cmd_options: "-config api.disablekey=true -config spider.maxDuration=5"
-
-      - name: Upload ZAP reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: |
-            report_html.html
-            report_json.json
-            report_md.md
-          if-no-files-found: ignore
+          # Zusätzliche Optionen:
+          # - API-Key deaktivieren
+          # - Spider max. 5 Minuten laufen lassen
+          cmd_options: '-z "-config api.disablekey=true -config spider.maxDuration=5"'
 
       - name: Print completion message
         shell: bash
