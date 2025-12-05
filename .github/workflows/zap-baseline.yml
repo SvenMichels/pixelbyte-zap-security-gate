@@ -36,13 +36,24 @@ jobs:
           fail_action: true
 
           # Der Report wird als Artifact hochgeladen
-          # Artigfact-Typ: HTML-Report
+          # Artifact-Typ: HTML-Report
           # report_type: "html"
           artifact_name: "zap-report"
 
           # Zusätzliche Optionen: API-Key deaktivieren + Spider-Laufzeit begrenzen
           # Spider maxDuration auf 5 Minuten gesetzt.
           cmd_options: "-config api.disablekey=true -config spider.maxDuration=5"
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: |
+            report_html.html
+            report_json.json
+            report_md.md
+          if-no-files-found: ignore
 
       - name: Print completion message
         shell: bash
