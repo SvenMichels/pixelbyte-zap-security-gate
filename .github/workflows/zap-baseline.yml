@@ -8,6 +8,14 @@ on:
       target:
         description: "URL eingeben zum Scannen (inkl. http/https)"
         required: true
+        type: string
+        default: "https://example.com"
+  workflow_call:
+    inputs:
+      target:
+        description: "URL eingeben zum Scannen (inkl. http/https)"
+        required: true
+        type: string
         default: "https://example.com"
 
 jobs:
